@@ -29,7 +29,8 @@ const SHEET = {
 const MONTH_NAMES = ["January","February","March","April","May","June","July",
   "August","September","October","November","December"];
 
-function getSS(){ return SpreadsheetApp.getActiveSpreadsheet(); }
+const SPREADSHEET_ID = '14ss6cq3IuEUeeuHytqCDFt9gMqQwRq616hqBNA6qr-8';
+function getSS(){ return SpreadsheetApp.openById(SPREADSHEET_ID); }
 
 /* ================= ONE-TIME SETUP ================= */
 function setupSheets(){
@@ -195,6 +196,21 @@ function doGet(e){
   const action = (e.parameter && e.parameter.action) || 'getData';
   let result;
   if(action === 'getData') result = getAllData();
+  else if(action === 'test'){
+    try{
+      const ss = getSS();
+      result = {
+        ssName: ss.getName(),
+        ssId: ss.getId(),
+        sheetNames: ss.getSheets().map(s=>s.getName()),
+        flatsSheetFound: !!ss.getSheetByName(SHEET.FLATS),
+        paymentsSheetFound: !!ss.getSheetByName(SHEET.PAYMENTS),
+        expensesSheetFound: !!ss.getSheetByName(SHEET.EXPENSES)
+      };
+    }catch(err){
+      result = {testError: String(err)};
+    }
+  }
   else result = {error:'Unknown action'};
   return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
 }
@@ -337,7 +353,7 @@ function updateConfig(p){
 
 /* ================= DIAGNOSTIC TEST (safe to keep or delete later) ================= */
 function testConnection(){
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const ss = getSS();
   Logger.log('Spreadsheet name: ' + ss.getName());
   Logger.log('Sheets: ' + ss.getSheets().map(s=>s.getName()).join(', '));
 }
