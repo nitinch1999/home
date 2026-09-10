@@ -334,3 +334,10 @@ function updateConfig(p){
   if(p.defaultAmount) props.setProperty('defaultAmount', String(p.defaultAmount));
   return {ok:true};
 }
+
+/* ================= DIAGNOSTIC TEST (safe to keep or delete later) ================= */
+function testConnection(){
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  Logger.log('Spreadsheet name: ' + ss.getName());
+  Logger.log('Sheets: ' + ss.getSheets().map(s=>s.getName()).join(', '));
+}
